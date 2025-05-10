@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  mariadb:
+    image: mariadb:latest
+    container_name: worldview-db
+    environment:
+      MYSQL_ROOT_PASSWORD: Mariadbpass
+      MYSQL_DATABASE: worldview
+      MYSQL_USER: flask
+      MYSQL_PASSWORD: Flaskpass
+    volumes:
+      - worldview-data:/var/lib/mysql
+      - ./sql/init.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "3306:3306"
+    networks:
+      - dev-network
+    restart: unless-stopped
+
+  flask:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    depends_on:
+      - mariadb
+    volumes:
+      - ./app:/app
+    environment:
+      - FLASK_ENV=development
+    networks:
+      - dev-network
+
+  app:
+    image: mcr.microsoft.com/devcontainers/base:ubuntu
+    container_name: dev-container
+    volumes:
+      - ../..:/workspace:cached
+    command: sleep infinity
+    depends_on:
+      - mariadb
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
+
+volumes:
+  worldview-data:
