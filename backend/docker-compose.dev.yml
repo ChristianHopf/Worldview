@@ -33,6 +33,21 @@ services:
     networks:
       - dev-network
 
+  minecraft:
+    image: itzg/minecraft-server:latest
+    container_name: mc-server
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE"
+      TYPE: "VANILLA"
+      MEMORY: "2G"
+      SPAWN_PROTECTION: "0"
+      MOTD: "Minecraft Server"
+    volumes:
+      - minecraft-data:/data
+    restart: unless-stopped
+
   app:
     image: mcr.microsoft.com/devcontainers/base:ubuntu
     container_name: dev-container
@@ -50,3 +65,4 @@ networks:
 
 volumes:
   worldview-data:
+  minecraft-data:
