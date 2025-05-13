@@ -1,18 +1,14 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
 
 type Props = {};
 export function ServerStatus({}: Props) {
   const [serverStatus, setServerStatus] = useState({
-    status: "offline",
     players: 0,
+    status: "online",
   });
-
-  const toggleIsRunning = () => {
-    setIsRunning((prev) => !prev);
-  };
 
   const fetchStatus = async () => {
     try {
@@ -28,6 +24,7 @@ export function ServerStatus({}: Props) {
       }
 
       const data = await response.json();
+      console.log(data);
       setServerStatus(data);
     } catch (err) {
       console.error(err instanceof Error ? err.message : "An error occurred");
@@ -39,7 +36,7 @@ export function ServerStatus({}: Props) {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/start`,
         {
-          cache: "no-store",
+          method: "POST",
         }
       );
 
@@ -58,7 +55,7 @@ export function ServerStatus({}: Props) {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/stop`,
         {
-          cache: "no-store",
+          method: "POST",
         }
       );
 
@@ -71,6 +68,10 @@ export function ServerStatus({}: Props) {
       console.error(err instanceof Error ? err.message : "An error occurred");
     }
   };
+
+  useEffect(() => {
+    fetchStatus();
+  }, []);
 
   return (
     <div>

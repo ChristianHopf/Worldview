@@ -17,24 +17,24 @@ dbConfig = {
     'database': 'worldview'
 }
 
-docker_client = docker.from_env()
+docker_client = docker.DockerClient(base_url='unix:///var/run/docker.sock')
 
 # Leave dealing with multiple servers for a future story
-# @app.route('/api/servers', methods=['GET'])
-# def get_servers():
-#     try:
-#         connection = mariadb.connect(**dbConfig)
-#         cursor = connection.cursor(dictionary=True)
-#         cursor.execute("SELECT * FROM servers")
-#         servers = cursor.fetchall()
+@app.route('/api/servers', methods=['GET'])
+def get_servers():
+    try:
+        connection = mariadb.connect(**dbConfig)
+        cursor = connection.cursor(dictionary=True)
+        cursor.execute("SELECT * FROM servers")
+        servers = cursor.fetchall()
         
-#         cursor.close()
-#         connection.close()
+        cursor.close()
+        connection.close()
         
-#         return jsonify(servers)
-#     except mariadb.Error as err:
-#         print(f"Connection error: {err}", file=sys.stderr)
-#         return jsonify({"error": "Failed to connect to database"}), 500
+        return jsonify(servers)
+    except mariadb.Error as err:
+        print(f"Connection error: {err}", file=sys.stderr)
+        return jsonify({"error": "Failed to connect to database"}), 500
 
 @app.route('/api/start', methods=['POST'])
 def start_server():
@@ -54,6 +54,7 @@ def stop_server():
         container = docker_client.containers.get("mc-server")
         if container.status == 'running':
             container.stop()
+        return jsonify({"message": "Server stopped"})
     except docker.errors.NotFound:
         return jsonify({"error": "Minecraft server container not found"}), 404
     except docker.errors.APIError as e:
