@@ -5,10 +5,33 @@ import { Button } from "./ui/button";
 
 type Props = {};
 export function ServerStatus({}: Props) {
-  const [isRunning, setIsRunning] = useState(false);
+  const [serverStatus, setServerStatus] = useState({
+    status: "offline",
+    players: 0,
+  });
 
-  const toggleServer = () => {
-    isRunning ? stopServer() : startServer();
+  const toggleIsRunning = () => {
+    setIsRunning((prev) => !prev);
+  };
+
+  const fetchStatus = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/status`,
+        {
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch server status");
+      }
+
+      const data = await response.json();
+      setServerStatus(data);
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : "An error occurred");
+    }
   };
 
   const startServer = async () => {
@@ -24,19 +47,39 @@ export function ServerStatus({}: Props) {
         throw new Error("Failed to start server");
       }
 
-      toggleServer();
+      await fetchStatus();
     } catch (err) {
       console.error(err instanceof Error ? err.message : "An error occurred");
     }
   };
 
-  const stopServer = () => {};
+  const stopServer = async () => {
+    try {
+      const response = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL}/api/stop`,
+        {
+          cache: "no-store",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to stop server");
+      }
+
+      await fetchStatus();
+    } catch (err) {
+      console.error(err instanceof Error ? err.message : "An error occurred");
+    }
+  };
 
   return (
     <div>
-      <h2>Server Status: {isRunning ? "running" : "stopped"}</h2>
-      <Button onClick={toggleServer} variant="default">
-        {isRunning ? "Stop Server" : "Start Server"}
+      <h2>Server Status: {serverStatus.status}</h2>
+      <Button onClick={startServer} disabled={serverStatus.status === "online"}>
+        Start
+      </Button>
+      <Button onClick={stopServer} disabled={serverStatus.status === "offline"}>
+        Stop
       </Button>
     </div>
   );
