@@ -9,6 +9,8 @@ from mcstatus import JavaServer
 import time
 
 app = Flask(__name__)
+app.config["REDIS_URL"] = "redis://localhost"
+app.register_blueprint(sse, url_prefix='/stream')
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 dbConfig = {
