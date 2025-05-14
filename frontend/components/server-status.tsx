@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import { Button } from "./ui/button";
+import { Loader2 } from "lucide-react";
 
 type Props = {};
 export function ServerStatus({}: Props) {
@@ -9,6 +10,8 @@ export function ServerStatus({}: Props) {
     players: 0,
     status: "online",
   });
+  const [starting, setStarting] = useState(false);
+  const [stopping, setStopping] = useState(false);
 
   const fetchStatus = async () => {
     try {
@@ -32,6 +35,7 @@ export function ServerStatus({}: Props) {
   };
 
   const startServer = async () => {
+    setStarting(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/start`,
@@ -47,10 +51,13 @@ export function ServerStatus({}: Props) {
       await fetchStatus();
     } catch (err) {
       console.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setStarting(false);
     }
   };
 
   const stopServer = async () => {
+    setStopping(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/stop`,
@@ -66,6 +73,8 @@ export function ServerStatus({}: Props) {
       await fetchStatus();
     } catch (err) {
       console.error(err instanceof Error ? err.message : "An error occurred");
+    } finally {
+      setStopping(false);
     }
   };
 
@@ -74,15 +83,25 @@ export function ServerStatus({}: Props) {
   }, []);
 
   return (
-    <div>
+    <>
       <h2>Server Status: {serverStatus.status}</h2>
-      <Button onClick={startServer} disabled={serverStatus.status === "online"}>
-        Start
-      </Button>
-      <Button onClick={stopServer} disabled={serverStatus.status === "offline"}>
-        Stop
-      </Button>
-    </div>
+      <div className="flex items-center gap-4">
+        <Button
+          className="w-24 h-10"
+          onClick={startServer}
+          disabled={serverStatus.status === "online"}
+        >
+          {starting ? <Loader2 className=" animate-spin" /> : "Start"}
+        </Button>
+        <Button
+          className="w-24 h-10"
+          onClick={stopServer}
+          disabled={serverStatus.status === "offline"}
+        >
+          {stopping ? <Loader2 className=" animate-spin" /> : "Stop"}
+        </Button>
+      </div>
+    </>
   );
 }
 
