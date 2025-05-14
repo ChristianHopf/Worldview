@@ -1,5 +1,6 @@
 import docker.errors
 from flask import Flask, jsonify
+from flask_sse import sse
 from flask_cors import CORS
 import mariadb
 import sys
@@ -100,6 +101,10 @@ def get_server_status():
             "status": "offline",
             "players": 0
         })
+
+@app.route('/api/logs', methods=['GET'])
+def stream_logs():
+    
         
 
 if __name__ == '__main__':
