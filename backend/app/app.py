@@ -5,6 +5,7 @@ import mariadb
 import sys
 import docker
 from mcstatus import JavaServer
+import time
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
@@ -42,7 +43,21 @@ def start_server():
         container = docker_client.containers.get("mc-server")
         if container.status != 'running':
             container.start()
-        return jsonify({"message": "Server started"})
+            
+            # Wait 60 seconds
+            timeout = 60
+            interval = 2
+            elapsed = 0
+            while elapsed < timeout:
+                try:
+                    server = JavaServer.lookup("minecraft:25565")
+                    server.status()
+                    return jsonify({"message": "Server started"})
+                except:
+                    time.sleep(interval)
+                    elapsed += interval
+            return jsonify({"error": "Timeout: Failed to start server"}), 504
+        return jsonify({"message": "Server is already running"})
     except docker.errors.NotFound:
         return jsonify({"error": "Minecraft server container not found"}), 404
     except docker.errors.APIError as e:
@@ -54,7 +69,18 @@ def stop_server():
         container = docker_client.containers.get("mc-server")
         if container.status == 'running':
             container.stop()
-        return jsonify({"message": "Server stopped"})
+            
+            timeout = 60
+            interval = 2
+            elapsed = 0
+            while elapsed < timeout:
+                container.reload()
+                if container.status == 'exited':
+                    return jsonify({"message": "Server stopped"})
+                time.sleep(interval)
+                elapsed += interval
+            return jsonify({"error": "Timeout: Failed to stop server"}), 504
+        return jsonify({"message": "Server already stopped"})
     except docker.errors.NotFound:
         return jsonify({"error": "Minecraft server container not found"}), 404
     except docker.errors.APIError as e:
