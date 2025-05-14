@@ -6,6 +6,7 @@ import sys
 import docker
 from mcstatus import JavaServer
 import time
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
@@ -105,7 +106,8 @@ def get_server_status():
 def stream_logs():
     def generate():
         while True:
-            yield f'data: Hello\n\n'
+            time.sleep(1)
+            yield f'data: {datetime.now()}\n\n'
     return Response(generate(), content_type='text/event-stream')
         
 
