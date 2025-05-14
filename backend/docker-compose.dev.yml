@@ -28,10 +28,28 @@ services:
       - mariadb
     volumes:
       - ./app:/app
+      - /var/run/docker.sock:/var/run/docker.sock
     environment:
       - FLASK_ENV=development
     networks:
       - dev-network
+
+  minecraft:
+    image: itzg/minecraft-server:latest
+    container_name: mc-server
+    ports:
+      - "25565:25565"
+    environment:
+      EULA: "TRUE"
+      TYPE: "VANILLA"
+      MEMORY: "2G"
+      SPAWN_PROTECTION: "0"
+      MOTD: "Minecraft Server"
+    volumes:
+      - minecraft-data:/data
+    networks:
+      - dev-network
+    restart: unless-stopped
 
   app:
     image: mcr.microsoft.com/devcontainers/base:ubuntu
@@ -50,3 +68,4 @@ networks:
 
 volumes:
   worldview-data:
+  minecraft-data:

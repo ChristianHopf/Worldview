@@ -10,17 +10,27 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { Home, Settings } from "lucide-react";
+import { Home, Settings, Map, User } from "lucide-react";
 
 const items = [
   {
-    title: "Servers",
-    url: "#",
+    title: "Home",
+    url: "/",
     icon: Home,
   },
   {
+    title: "Map",
+    url: "/map",
+    icon: Map,
+  },
+  {
+    title: "Members",
+    url: "/members",
+    icon: User,
+  },
+  {
     title: "Settings",
-    url: "#",
+    url: "/setttings",
     icon: Settings,
   },
 ];
