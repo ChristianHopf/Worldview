@@ -47,6 +47,8 @@ services:
       MOTD: "Minecraft Server"
     volumes:
       - minecraft-data:/data
+    networks:
+      - dev-network
     restart: unless-stopped
 
   app:
