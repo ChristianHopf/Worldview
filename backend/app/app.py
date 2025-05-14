@@ -1,6 +1,5 @@
 import docker.errors
-from flask import Flask, jsonify
-from flask_sse import sse
+from flask import Flask, jsonify, Response
 from flask_cors import CORS
 import mariadb
 import sys
@@ -9,8 +8,6 @@ from mcstatus import JavaServer
 import time
 
 app = Flask(__name__)
-app.config["REDIS_URL"] = "redis://localhost"
-app.register_blueprint(sse, url_prefix='/stream')
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 dbConfig = {
@@ -104,9 +101,12 @@ def get_server_status():
             "players": 0
         })
 
-@app.route('/api/logs', methods=['GET'])
+@app.route('/api/logs/stream', methods=['GET'])
 def stream_logs():
-    
+    def generate():
+        while True:
+            yield f'data: Hello\n\n'
+    return Response(generate(), content_type='text/event-stream')
         
 
 if __name__ == '__main__':
