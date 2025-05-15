@@ -105,9 +105,15 @@ def get_server_status():
 @app.route('/api/logs/stream', methods=['GET'])
 def stream_logs():
     def generate():
-        while True:
-            time.sleep(1)
-            yield f'data: {datetime.now()}\n\n'
+        try:
+            container = docker_client.containers.get("mc-server")
+            logs = container.logs(stream=True, follow=True, timestamps=True)
+            for log in logs:
+                yield f"data: {log.decode('utf-8')}\n\n"
+        except docker.errors.NotFound:
+            return jsonify({"error": "Minecraft server container not found"}), 404
+        except docker.errors.APIError as e:
+            return jsonify({"error": str(e)}), 500
     return Response(generate(), content_type='text/event-stream')
         
 
