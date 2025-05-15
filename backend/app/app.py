@@ -102,6 +102,19 @@ def get_server_status():
             "players": 0
         })
 
+@app.route('/api/logs', methods=['GET'])
+def get_logs():
+    try:
+        container = docker_client.containers.get("mc-server")
+        logs = container.logs(tail=20, timestamps=True).decode('utf-8')
+        return jsonify({"logs": logs})
+    except docker.errors.NotFound:
+        return jsonify({"error": "Minecraft server container not found"}), 404
+    except docker.errors.APIError as e:
+            return jsonify({"error": str(e)}), 500
+
+# TODO fix reloading
+# - receive some kind of signal when the user starts the container to rerun?
 @app.route('/api/logs/stream', methods=['GET'])
 def stream_logs():
     def generate():
