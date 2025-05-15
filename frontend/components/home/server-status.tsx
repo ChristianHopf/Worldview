@@ -3,6 +3,13 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
+import {
+  Card,
+  CardAction,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "../ui/card";
 
 type Props = {};
 export function ServerStatus({}: Props) {
@@ -83,25 +90,32 @@ export function ServerStatus({}: Props) {
   }, []);
 
   return (
-    <>
-      <h2>Server Status: {serverStatus.status}</h2>
-      <div className="flex items-center gap-4">
-        <Button
-          className="w-24 h-10"
-          onClick={startServer}
-          disabled={serverStatus.status === "online"}
-        >
-          {starting ? <Loader2 className=" animate-spin" /> : "Start"}
-        </Button>
-        <Button
-          className="w-24 h-10"
-          onClick={stopServer}
-          disabled={serverStatus.status === "offline"}
-        >
-          {stopping ? <Loader2 className=" animate-spin" /> : "Stop"}
-        </Button>
-      </div>
-    </>
+    
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Server Status</CardTitle>
+      </CardHeader>
+      <CardContent>{serverStatus.status}</CardContent>
+      <CardAction>
+        <div className="flex items-center gap-4">
+          <Button
+            className="w-24 h-10"
+            onClick={startServer}
+            disabled={serverStatus.status === "online"}
+          >
+            {starting ? <Loader2 className=" animate-spin" /> : "Start"}
+          </Button>
+          <Button
+            className="w-24 h-10"
+            onClick={stopServer}
+            disabled={serverStatus.status === "offline"}
+          >
+            {stopping ? <Loader2 className=" animate-spin" /> : "Stop"}
+          </Button>
+        </div>
+      </CardAction>
+    </Card>
   );
 }
 

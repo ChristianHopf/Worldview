@@ -2,6 +2,8 @@
 
 import React from "react";
 import { useEffect, useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
+import { ScrollArea } from "../ui/scroll-area";
 
 type Props = {};
 
@@ -21,7 +23,7 @@ export function ServerLogs({}: Props) {
       handleStream(event.data);
     };
 
-    sse.onerror = (event) => {
+    sse.onerror = () => {
       sse.close();
     };
 
@@ -31,10 +33,16 @@ export function ServerLogs({}: Props) {
   }, []);
 
   return (
-    <div className="flex flex-col">
-      <h1>Server Logs</h1>
-      <p>{logs}</p>
-    </div>
+    <Card>
+      <CardHeader>
+        <CardTitle>Server Logs</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <ScrollArea className=" min-h-[50vh] border-2 px-2">
+          <pre className="pre-wrap">{logs}</pre>
+        </ScrollArea>
+      </CardContent>
+    </Card>
   );
 }
 
