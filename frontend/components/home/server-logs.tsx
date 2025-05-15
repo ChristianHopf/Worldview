@@ -21,7 +21,7 @@ export function ServerLogs({}: Props) {
 
     sse.onmessage = (event) => {
       // handleStream(event.data);
-      setLogs((prevLogs) => [...prevLogs, event.data]);
+      setLogs((prevLogs) => [...prevLogs, event.data + "\n"]);
     };
 
     sse.onerror = (event) => {
@@ -39,8 +39,8 @@ export function ServerLogs({}: Props) {
         <CardTitle>Server Logs</CardTitle>
       </CardHeader>
       <CardContent>
-        <ScrollArea className=" min-h-[50vh] border-2 px-2">
-          <pre className="pre-wrap">{logs}</pre>
+        <ScrollArea className="h-[50vh] border-2 px-2">
+          <pre className="text-sm font-mono pre-wrap">{logs}</pre>
         </ScrollArea>
       </CardContent>
     </Card>
