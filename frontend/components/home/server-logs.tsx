@@ -8,22 +8,23 @@ import { ScrollArea } from "../ui/scroll-area";
 type Props = {};
 
 export function ServerLogs({}: Props) {
-  const [logs, setLogs] = useState<string>();
+  const [logs, setLogs] = useState<string[]>([]);
 
   useEffect(() => {
     const sse = new EventSource(
       `${process.env.NEXT_PUBLIC_API_URL}/api/logs/stream`
     );
 
-    function handleStream(data: string) {
-      setLogs(data);
-    }
+    // function handleStream(data: string) {
+    //   setLogs(data);
+    // }
 
     sse.onmessage = (event) => {
-      handleStream(event.data);
+      // handleStream(event.data);
+      setLogs((prevLogs) => [...prevLogs, event.data]);
     };
 
-    sse.onerror = () => {
+    sse.onerror = (event) => {
       sse.close();
     };
 
