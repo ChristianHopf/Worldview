@@ -1,11 +1,12 @@
 import docker.errors
-from flask import Flask, jsonify
+from flask import Flask, jsonify, Response
 from flask_cors import CORS
 import mariadb
 import sys
 import docker
 from mcstatus import JavaServer
 import time
+from datetime import datetime
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
@@ -100,6 +101,33 @@ def get_server_status():
             "status": "offline",
             "players": 0
         })
+
+@app.route('/api/logs', methods=['GET'])
+def get_logs():
+    try:
+        container = docker_client.containers.get("mc-server")
+        logs = container.logs(tail=100, timestamps=True).decode('utf-8')
+        return jsonify({"logs": logs})
+    except docker.errors.NotFound:
+        return jsonify({"error": "Minecraft server container not found"}), 404
+    except docker.errors.APIError as e:
+            return jsonify({"error": str(e)}), 500
+
+# TODO fix reloading
+# - receive some kind of signal when the user starts the container to rerun?
+@app.route('/api/logs/stream', methods=['GET'])
+def stream_logs():
+    def generate():
+        try:
+            container = docker_client.containers.get("mc-server")
+            logs = container.logs(stream=True, follow=True, timestamps=True)
+            for log in logs:
+                yield f"data: {log.decode('utf-8')}\n\n"
+        except docker.errors.NotFound:
+            return jsonify({"error": "Minecraft server container not found"}), 404
+        except docker.errors.APIError as e:
+            return jsonify({"error": str(e)}), 500
+    return Response(generate(), content_type='text/event-stream')
         
 
 if __name__ == '__main__':
