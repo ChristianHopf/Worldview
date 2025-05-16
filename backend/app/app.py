@@ -106,7 +106,7 @@ def get_server_status():
 def get_logs():
     try:
         container = docker_client.containers.get("mc-server")
-        logs = container.logs(tail=20, timestamps=True).decode('utf-8')
+        logs = container.logs(tail=100, timestamps=True).decode('utf-8')
         return jsonify({"logs": logs})
     except docker.errors.NotFound:
         return jsonify({"error": "Minecraft server container not found"}), 404
