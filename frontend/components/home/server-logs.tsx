@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 import { ScrollArea } from "../ui/scroll-area";
 
@@ -9,6 +9,7 @@ type Props = {};
 
 export function ServerLogs({}: Props) {
   const [logs, setLogs] = useState<Set<string>>(new Set<string>());
+  const scrollRef = useRef<HTMLPreElement>(null);
 
   const fetchLogs = async () => {
     const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/logs`);
@@ -24,6 +25,12 @@ export function ServerLogs({}: Props) {
       return newLogs;
     });
   };
+
+  useEffect(() => {
+    if (scrollRef.current) {
+      scrollRef.current.scrollIntoView(false);
+    }
+  }, [logs]);
 
   // Poll for logs every 5 seconds
   useEffect(() => {
@@ -64,7 +71,9 @@ export function ServerLogs({}: Props) {
       </CardHeader>
       <CardContent>
         <ScrollArea className="h-[50vh] border-2 px-2">
-          <pre className="text-sm font-mono pre-wrap">{logs}</pre>
+          <pre className="text-sm font-mono pre-wrap" ref={scrollRef}>
+            {logs}
+          </pre>
         </ScrollArea>
       </CardContent>
     </Card>
