@@ -58,7 +58,7 @@ export function ServerLogs({}: Props) {
   // }, []);
 
   return (
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Server Logs</CardTitle>
       </CardHeader>
