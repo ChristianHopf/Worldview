@@ -7,6 +7,7 @@ import docker
 from mcstatus import JavaServer
 import time
 from datetime import datetime
+from socket import gaierror, timeout
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
@@ -101,6 +102,26 @@ def get_server_status():
             "status": "offline",
             "players": 0
         })
+        
+@app.route('/api/players', methods=['GET'])
+def get_players():
+    try:
+        server = JavaServer.lookup("minecraft:25565")
+        # query = server.query() This just fails immediately, not sure why
+        status = server.status()
+        
+        if status.players.sample:
+            return jsonify({
+                "players": status.players.sample
+            })
+        else:
+            return jsonify({
+                "players": [],
+            })
+    except:
+        return jsonify({
+            "error": "Failed to connect to server or server is offline",
+        }), 503
 
 @app.route('/api/logs', methods=['GET'])
 def get_logs():
