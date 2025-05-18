@@ -15,6 +15,7 @@ import { Loader2 } from "lucide-react";
 interface Player {
   id: number;
   name: string;
+  online: boolean;
 }
 
 export default function Members() {
@@ -65,7 +66,7 @@ export default function Members() {
           {players.map((player) => (
             <TableRow key={player.id}>
               <TableCell>{player.name}</TableCell>
-              <TableCell>Online</TableCell>
+              <TableCell>{player.online ? "Online" : "Offline"}</TableCell>
               <TableCell className="font-medium">{player.id}</TableCell>
             </TableRow>
           ))}
