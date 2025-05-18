@@ -3,13 +3,7 @@
 import React, { useEffect, useState } from "react";
 import { Button } from "../ui/button";
 import { Loader2 } from "lucide-react";
-import {
-  Card,
-  CardAction,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "../ui/card";
 
 type Props = {};
 export function ServerStatus({}: Props) {
@@ -17,10 +11,12 @@ export function ServerStatus({}: Props) {
     players: 0,
     status: "online",
   });
+  const [loading, setLoading] = useState(false);
   const [starting, setStarting] = useState(false);
   const [stopping, setStopping] = useState(false);
 
   const fetchStatus = async () => {
+    setLoading(true);
     try {
       const response = await fetch(
         `${process.env.NEXT_PUBLIC_API_URL}/api/status`,
@@ -36,6 +32,7 @@ export function ServerStatus({}: Props) {
       const data = await response.json();
       console.log(data);
       setServerStatus(data);
+      setLoading(false);
     } catch (err) {
       console.error(err instanceof Error ? err.message : "An error occurred");
     }
@@ -90,31 +87,33 @@ export function ServerStatus({}: Props) {
   }, []);
 
   return (
-    
-
-    <Card>
+    <Card className="w-full">
       <CardHeader>
         <CardTitle>Server Status</CardTitle>
       </CardHeader>
-      <CardContent>{serverStatus.status}</CardContent>
-      <CardAction>
-        <div className="flex items-center gap-4">
-          <Button
-            className="w-24 h-10"
-            onClick={startServer}
-            disabled={serverStatus.status === "online"}
-          >
-            {starting ? <Loader2 className=" animate-spin" /> : "Start"}
-          </Button>
-          <Button
-            className="w-24 h-10"
-            onClick={stopServer}
-            disabled={serverStatus.status === "offline"}
-          >
-            {stopping ? <Loader2 className=" animate-spin" /> : "Stop"}
-          </Button>
-        </div>
-      </CardAction>
+      {loading ? (
+        <Loader2 className=" animate-spin" />
+      ) : (
+        <>
+          <CardContent>
+            <p className="mb-4">{serverStatus.status}</p>
+            <Button
+              onClick={
+                serverStatus.status === "online" ? stopServer : startServer
+              }
+              disabled={loading}
+            >
+              {starting ? (
+                <Loader2 className=" animate-spin" />
+              ) : serverStatus.status === "offline" ? (
+                "Start"
+              ) : (
+                "Stop"
+              )}
+            </Button>
+          </CardContent>
+        </>
+      )}
     </Card>
   );
 }
