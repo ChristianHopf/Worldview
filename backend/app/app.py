@@ -8,9 +8,14 @@ from mcstatus import JavaServer
 import time
 from datetime import datetime
 from socket import gaierror, timeout
+import json
+import os
 
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
+
+SERVER_DIR = "/server_data"
+USERCACHE_FILE = os.path.join(SERVER_DIR, "usercache.json")
 
 dbConfig = {
     'host': 'mariadb',
@@ -109,18 +114,36 @@ def get_players():
         server = JavaServer.lookup("minecraft:25565")
         # query = server.query() This just fails immediately, not sure why
         status = server.status()
+        members = []
         
-        if status.players.sample:
-            return jsonify({
-                "players": status.players.sample
-            })
-        else:
-            return jsonify({
-                "players": [],
-            })
-    except:
+        # Get online players
+        online_players = [{"name": player.name, "uuid": player.uuid, "online": True} for player in status.players.sample] if status.players.sample else []
+        
+        # Get members from usercache.json
+        with open(USERCACHE_FILE, 'r') as file:
+            usercache = json.load(file)
+            members = [
+                {"name": entry["name"], "uuid": entry["uuid"], "online": False} for entry in usercache
+            ]
+            
+        # Set online members to online
+        online_uuids = {player["uuid"] for player in online_players}
+        for player in members:
+            if player["uuid"] in online_uuids:
+                player["online"] = True
+                
+        return jsonify({"players": members})
+    # server.status() throws an error -> server is offline, return usercache members
+    except (gaierror, timeout, ConnectionRefusedError, ValueError) as err:
+        with open(USERCACHE_FILE, 'r') as file:
+            usercache = json.load(file)
+            members = [
+                {"name": entry["name"], "uuid": entry["uuid"], "online": False} for entry in usercache
+            ]
         return jsonify({
+            "players": members,
             "error": "Failed to connect to server or server is offline",
+            "message": str(err)
         }), 503
 
 @app.route('/api/logs', methods=['GET'])
