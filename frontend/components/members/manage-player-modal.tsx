@@ -12,7 +12,7 @@ type Props = {
 
 export default function ManagePlayerModal({ player }: Props) {
   return (
-    <DialogContent className="sm:max-w-md">
+    <DialogContent className="sm:max-w-md bg-background border-border rounded-lg p-6">
       <DialogHeader>
         <DialogTitle>Manage {player.name}</DialogTitle>
       </DialogHeader>
