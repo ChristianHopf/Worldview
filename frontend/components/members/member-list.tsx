@@ -11,19 +11,9 @@ import {
 } from "../ui/table";
 import { Player } from "@/types/player";
 import { Button } from "../ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogOverlay,
-  DialogTitle,
-  DialogTrigger,
-} from "@radix-ui/react-dialog";
-import ManagePlayerModal from "./manage-player-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
-import { DialogCloseButton, ManagePlayer } from "./manage-player";
-import { DialogHeader } from "../ui/dialog";
+import { ManagePlayer } from "./manage-player";
 
 type Props = {};
 
@@ -64,16 +54,19 @@ export default function MemberList({}: Props) {
           name: "mathdoer512",
           uuid: "1c2b719f-e824-4bdd-a5ca-d0023a619dc5",
           online: true,
+          isOp: true,
         },
         {
           name: "sirquacc",
           uuid: "1c2b719f-e824-4bdd-a5ca-d0023a619dc6",
           online: false,
+          isOp: false,
         },
         {
           name: "Odin_25",
           uuid: "1c2b719f-e824-4bdd-a5ca-d0023a619dc7",
           online: false,
+          isOp: false,
         },
       ]);
       setLoading(false);

@@ -3,21 +3,54 @@ import {
   Dialog,
   DialogClose,
   DialogContent,
-  DialogDescription,
   DialogFooter,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Label } from "@/components/ui/label";
-import { Switch } from "@radix-ui/react-switch";
 import { Player } from "@/types/player";
+
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import {
+  Form,
+  FormControl,
+  FormDescription,
+  FormField,
+  FormItem,
+  FormLabel,
+} from "@/components/ui/form";
+import { Switch } from "@/components/ui/switch";
+import { SwitchForm } from "./test-switch";
+
+const FormSchema = z.object({
+  isOp: z.boolean(),
+});
 
 type Props = {
   player: Player;
 };
 
 export function ManagePlayer({ player }: Props) {
+  const form = useForm<z.infer<typeof FormSchema>>({
+    resolver: zodResolver(FormSchema),
+    defaultValues: {
+      isOp: player.isOp || false,
+    },
+  });
+
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    // toast({
+    //   title: "You submitted the following values:",
+    //   description: (
+    //     <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+    //       <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+    //     </pre>
+    //   ),
+    // })
+  }
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -26,27 +59,48 @@ export function ManagePlayer({ player }: Props) {
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Manage {player.name}</DialogTitle>
-          <DialogDescription>
-            Manage operator status and kick or ban player from the server.
-          </DialogDescription>
         </DialogHeader>
-        <div className="flex items-center space-x-2">
-          <div className="grid flex-1 gap-2">
-            <Label htmlFor="operator" className="sr-only">
-              Operator Status
-            </Label>
-            <Switch id="operator" />
-          </div>
-          <Button>Kick</Button>
-          <Button>Ban</Button>
-        </div>
-        <DialogFooter className="sm:justify-start">
-          <DialogClose asChild>
-            <Button type="button" variant="secondary">
-              Close
-            </Button>
-          </DialogClose>
-        </DialogFooter>
+        <Form {...form}>
+          <form
+            onSubmit={form.handleSubmit(onSubmit)}
+            className="w-full space-y-6"
+          >
+            <div>
+              <div className="space-y-4">
+                <FormField
+                  control={form.control}
+                  name="isOp"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-row items-center justify-between">
+                      <div className="space-y-0.5">
+                        <FormLabel>Operator status</FormLabel>
+                        <FormDescription>
+                          Server operators have administrative privileges.
+                        </FormDescription>
+                      </div>
+                      <FormControl>
+                        <Switch
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                      </FormControl>
+                    </FormItem>
+                  )}
+                />
+              </div>
+            </div>
+            <DialogFooter className="sm:justify-start">
+              <DialogClose asChild>
+                <Button type="submit">Submit</Button>
+              </DialogClose>
+              <DialogClose asChild>
+                <Button type="button" variant="secondary">
+                  Cancel
+                </Button>
+              </DialogClose>
+            </DialogFooter>
+          </form>
+        </Form>
       </DialogContent>
     </Dialog>
   );
