@@ -11,16 +11,25 @@ import {
 } from "../ui/table";
 import { Player } from "@/types/player";
 import { Button } from "../ui/button";
-import { Dialog, DialogOverlay } from "@radix-ui/react-dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogOverlay,
+  DialogTitle,
+  DialogTrigger,
+} from "@radix-ui/react-dialog";
 import ManagePlayerModal from "./manage-player-modal";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
+import { DialogCloseButton, ManagePlayer } from "./manage-player";
+import { DialogHeader } from "../ui/dialog";
 
 type Props = {};
 
 export default function MemberList({}: Props) {
   const [players, setPlayers] = useState<Player[]>([]);
-  const [selectedPlayer, setSelectedPlayer] = useState<Player | null>();
+  //   const [selectedPlayer, setSelectedPlayer] = useState<Player | null>();
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -78,13 +87,6 @@ export default function MemberList({}: Props) {
 
   return (
     <>
-      <Dialog
-        open={!!selectedPlayer}
-        onOpenChange={(open) => !open && setSelectedPlayer(null)}
-      >
-        <DialogOverlay className="bg-black/50" />
-        {selectedPlayer && <ManagePlayerModal player={selectedPlayer} />}
-      </Dialog>
       <Card className="m-4">
         <CardContent>
           <div className="flex flex-col gap-2">
@@ -132,11 +134,7 @@ export default function MemberList({}: Props) {
                             </TableCell>
                             <TableCell>
                               <span>
-                                <Button
-                                  onClick={() => setSelectedPlayer(player)}
-                                >
-                                  Manage
-                                </Button>
+                                <ManagePlayer player={player} />
                               </span>
                             </TableCell>
                           </TableRow>
@@ -171,11 +169,7 @@ export default function MemberList({}: Props) {
                             </TableCell>
                             <TableCell>
                               <span>
-                                <Button
-                                  onClick={() => setSelectedPlayer(player)}
-                                >
-                                  Manage
-                                </Button>
+                                <ManagePlayer player={player} />
                               </span>
                             </TableCell>
                           </TableRow>
