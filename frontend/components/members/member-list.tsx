@@ -113,8 +113,8 @@ export default function MemberList({}: Props) {
                     <Table className="table-fixed w-full">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-[140px]">Name</TableHead>
-                          <TableHead className="w-[260px]">Player ID</TableHead>
+                          <TableHead className="w-12">Name</TableHead>
+                          <TableHead className="w-24">Player ID</TableHead>
                           <TableHead className="w-[80px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -126,9 +126,11 @@ export default function MemberList({}: Props) {
                               {player.uuid}
                             </TableCell>
                             <TableCell>
-                              <span>
+                              <div className="flex gap-2">
                                 <ManagePlayer player={player} />
-                              </span>
+                                <Button>Kick</Button>
+                                <Button>Ban</Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
@@ -148,8 +150,8 @@ export default function MemberList({}: Props) {
                     <Table className="table-fixed w-full">
                       <TableHeader>
                         <TableRow>
-                          <TableHead className="w-[140px]">Name</TableHead>
-                          <TableHead className="w-[260px]">Player ID</TableHead>
+                          <TableHead className="w-12">Name</TableHead>
+                          <TableHead className="w-24">Player ID</TableHead>
                           <TableHead className="w-[80px]">Actions</TableHead>
                         </TableRow>
                       </TableHeader>
@@ -161,9 +163,10 @@ export default function MemberList({}: Props) {
                               {player.uuid}
                             </TableCell>
                             <TableCell>
-                              <span>
+                              <div className="flex gap-2">
                                 <ManagePlayer player={player} />
-                              </span>
+                                <Button>Ban</Button>
+                              </div>
                             </TableCell>
                           </TableRow>
                         ))}
