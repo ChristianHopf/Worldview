@@ -14,6 +14,9 @@ import { Button } from "../ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 import { ManagePlayer } from "./manage-player";
+import { KickPlayer } from "./kick-player";
+import { Skeleton } from "../ui/skeleton";
+import { BanPlayer } from "./ban-player";
 
 type Props = {};
 
@@ -51,7 +54,7 @@ export default function MemberList({}: Props) {
       //   }
       setPlayers([
         {
-          name: "mathdoer512",
+          name: "abcdefghijklmnop",
           uuid: "1c2b719f-e824-4bdd-a5ca-d0023a619dc5",
           online: true,
           isOp: true,
@@ -80,9 +83,9 @@ export default function MemberList({}: Props) {
 
   return (
     <>
-      <Card className="m-4">
+      <Card className="m-4 w-full max-w-4xl mx-auto">
         <CardContent>
-          <div className="flex flex-col gap-2">
+          <div className="flex flex-col gap-4">
             <div className="flex gap-2 items-center">
               <Button
                 variant="outline"
@@ -100,8 +103,17 @@ export default function MemberList({}: Props) {
               )}
             </div>
             {loading ? (
-              <div className="flex justify-center py-4">
-                <Loader2 className="animate-spin" />
+              <div className="flex flex-col gap-4">
+                {Array(5)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div key={i} className="space-y-2">
+                      <Skeleton className="h-4 w-full max-w-[650px]" />
+                      <Skeleton className="h-4 w-11/12 max-w-[600px]" />
+                      <Skeleton className="h-4 w-full max-w-[675px]" />
+                      <Skeleton className="h-4 w-10/12 max-w-[625px]" />
+                    </div>
+                  ))}
               </div>
             ) : (
               <div className="flex flex-col gap-6">
@@ -128,8 +140,8 @@ export default function MemberList({}: Props) {
                             <TableCell>
                               <div className="flex gap-2">
                                 <ManagePlayer player={player} />
-                                <Button>Kick</Button>
-                                <Button>Ban</Button>
+                                <KickPlayer player={player} />
+                                <BanPlayer player={player} />
                               </div>
                             </TableCell>
                           </TableRow>
@@ -165,7 +177,7 @@ export default function MemberList({}: Props) {
                             <TableCell>
                               <div className="flex gap-2">
                                 <ManagePlayer player={player} />
-                                <Button>Ban</Button>
+                                <BanPlayer player={player} />
                               </div>
                             </TableCell>
                           </TableRow>

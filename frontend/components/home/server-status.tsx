@@ -96,7 +96,10 @@ export function ServerStatus({}: Props) {
       ) : (
         <>
           <CardContent>
-            <p className="mb-4">{serverStatus.status}</p>
+            <p className="mb-4">
+              {serverStatus.status.charAt(0).toUpperCase() +
+                serverStatus.status.slice(1)}
+            </p>
             <Button
               onClick={
                 serverStatus.status === "online" ? stopServer : startServer
