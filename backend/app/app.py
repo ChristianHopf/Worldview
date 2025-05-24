@@ -16,6 +16,8 @@ CORS(app, resources={r"/api/*": {"origins": "http://localhost:3000"}})
 
 SERVER_DIR = "/server_data"
 USERCACHE_FILE = os.path.join(SERVER_DIR, "usercache.json")
+SERVER_PROPERTIES_FILE = os.path.join(SERVER_DIR, "server.properties")
+WHITELIST_FILE = os.path.join(SERVER_DIR, "whitelist.json")
 
 dbConfig = {
     'host': 'mariadb',
@@ -145,6 +147,19 @@ def get_players():
             "error": "Failed to connect to server or server is offline",
             "message": str(err)
         }), 503
+        
+@app.route('/api/togglewhitelist', methods=['POST'])
+def toggle_whitelist():
+    try:
+        container = docker_client.containers.get("mc-server")
+        
+        with open(USERCACHE_FILE, 'r') as file:
+            # TODO
+            # diff between white-list and enforce-whitelist
+    except docker.errors.NotFound:
+        return jsonify({"error": "Minecraft server container not found"}), 404
+    except docker.errors.APIError as e:
+            return jsonify({"error": str(e)}), 500
 
 @app.route('/api/logs', methods=['GET'])
 def get_logs():

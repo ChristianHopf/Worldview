@@ -83,7 +83,7 @@ export default function MemberList({}: Props) {
 
   return (
     <>
-      <Card className="m-4 w-full max-w-4xl mx-auto">
+      <Card className="m-4 w-full max-w-4xl">
         <CardContent>
           <div className="flex flex-col gap-4">
             <div className="flex gap-2 items-center">
